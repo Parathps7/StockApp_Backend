@@ -1,18 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 const request = require('request');
-const unzipper = require('unzipper');
-const prompt = require('prompt-sync')({sigint: true});
-const readline = require('readline');
 const csv = require('csv-parser');
-const mongoose = require('mongoose');
 const AdmZip = require('adm-zip');
-const connectDb = require('./config/dbConnection')
 const Equity = require('./models/equityModel')
-const errorHandler = require("./middleware/errorHandler")
 
-
-connectDb();
 
 const downloadAndExtractZip = (zipUrl, extractPath) => {
     return new Promise((resolve, reject) => {
@@ -59,14 +51,12 @@ const readCsvAndStoreInDatabase = async (csvPath,date) => {
     }
 };
 function convertToNormalDateFormat(numericDate) {
-    // Ensure numericDate is a string
     const initial = "20";
     numericDate = String(numericDate);
-    console.log("Numeric DATE: ",numericDate);
     const day = numericDate.slice(0, 2);
     let month = numericDate.slice(2, 4);
     const year = initial.concat(numericDate.slice(4)); 
-    console.log(day,month,year);
+
     // Create a new Date object with the extracted values
     const normalDate = new Date(`${month}-${day}-${year} EDT`);
     //IMPORTANT: took from stackoverflow(date func not returning correct date otherwise)
@@ -82,11 +72,12 @@ const fetchLast50DaysData = async () => {
     return result;
 };
 
-(async () => {
+
+const updateDataFromBhavcopy = async () => {
     const zero = "0";
-    let day = "5";
-    let month = "12";
-    let year = "23";
+    let day = "19";
+    let month = "1";
+    let year = "24";
     if(parseInt(day,10)<10){
         day = zero.concat(day);
     }
@@ -95,20 +86,34 @@ const fetchLast50DaysData = async () => {
     }
     const numericDate = day.concat(month,year);
     const date = convertToNormalDateFormat(numericDate);
-    console.log("Converted Date: ",date);
-    // const zipUrl = `https://www.bseindia.com/download/BhavCopy/Equity/EQ${numericDate}_CSV.ZIP`;
+    // Get today's date in the required format
+    // const today = new Date();
+    // const yesterday = new Date(today);
+    // yesterday.setDate(today.getDate() - 1);
+    // const day = yesterday.getDate().toString().padStart(2, '0');
+    // const month = (yesterday.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
+    // const year = yesterday.getFullYear().toString().substring(2);
 
-    // // Specify the path to extract the ZIP file
-    // const extractPath = './';
-    // await downloadAndExtractZip(zipUrl, extractPath);
+    // const numericDate = day + month + year;
+    // const date = convertToNormalDateFormat(numericDate);
+    // console.log("DATE: ",date);
+    // console.log("numericDate: ", numericDate);
+    // Construct the Bhavcopy ZIP URL
+    const zipUrl = `https://www.bseindia.com/download/BhavCopy/Equity/EQ${numericDate}_CSV.ZIP`;
 
-    // // // Read CSV and store in MongoDB using Mongoose
-    // const csvPath = path.join(extractPath, `EQ${numericDate}.CSV`);
-    // await readCsvAndStoreInDatabase(csvPath,date);
+    // Specify the path to extract the ZIP file
+    const extractPath = './';
+
+    // Download and extract the ZIP
+    await downloadAndExtractZip(zipUrl, extractPath);
+
+    // Read CSV and store in MongoDB using Mongoose
+    const csvPath = path.join(extractPath, `EQ${numericDate}.CSV`);
+    await readCsvAndStoreInDatabase(csvPath, date);
 
     // Fetch last 50 days data
-    const result= await fetchLast50DaysData();
-    console.log(result);
-    //Close the Mongoose connection
-    // mongoose.connection.close();
-})();
+//     const result= await fetchLast50DaysData();
+//     console.log(result);
+};
+
+module.exports = {updateDataFromBhavcopy};

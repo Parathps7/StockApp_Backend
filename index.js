@@ -7,6 +7,8 @@ const connectDb = require('./config/dbConnection')
 const port = process.env.PORT || 3000;
 const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
+const cron = require('node-cron');
+const {updateDataFromBhavcopy} = require('./script');
 
 //using middleware
 app.use(express.json())
@@ -46,8 +48,12 @@ const swaggerOptions = {
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-
+//schedule to update db
+cron.schedule("* */2 * * * *", async ()=> {
+    await updateDataFromBhavcopy();
+    console.log("running a task every 3 minute");
+});
+//routes setup
 app.get('/',(req,res)=>{res.send("hey")});
 const equityRoute = require('./routes/equityRoutes');
 app.use('/api/stocks',equityRoute)
