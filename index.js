@@ -5,13 +5,48 @@ const app = express();
 const cors = require('cors');
 const connectDb = require('./config/dbConnection')
 const port = process.env.PORT || 3000;
-
+const swaggerJSDoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
 
 //using middleware
 app.use(express.json())
 app.use(cors());
 //connect to db
 connectDb();
+// Swagger setup
+const swaggerOptions = {
+    definition: {
+        openapi: "3.0.0",
+        info: {
+        title: "Stock Price View Application API",
+        version: "1.0.0",
+        description: "API documentation for the Stock Price View Application",
+        },
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    in: 'header',
+                    name: 'Authorization',
+                    description: 'Bearer Token',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                },
+            },
+        },
+        servers: [
+        {
+            url: `http://localhost:${port}`,
+            description: "Development server",
+        },
+        ],
+    },
+    apis: ["./routes/*.js"],
+};
+
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 
 app.get('/',(req,res)=>{res.send("hey")});
 const equityRoute = require('./routes/equityRoutes');
