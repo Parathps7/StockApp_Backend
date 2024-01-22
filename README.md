@@ -61,6 +61,12 @@ HYPERGROW_AI/
    ```bash
    npm start
    ```
+   
+6. Run Swagger Documentation on:
+
+   ```plaintext
+   http://localhost:<PORT>/api-docs/
+   ```
 
 ## API Usage
 
@@ -68,7 +74,8 @@ HYPERGROW_AI/
 
 - **GET /api/stocks/top10**
   - Get the top 10 latest stocks.
-
+  - Implemented cache for faster retreival
+  
     Example:
     ```plaintext
     GET /api/stocks/top10
@@ -76,7 +83,7 @@ HYPERGROW_AI/
 
 - **GET /api/stocks?SC_NAME=<stock-name>**
   - Get a stock by name.
-
+  - 
     Example:
     ```plaintext
     GET /api/stocks?SC_NAME=Reliance
@@ -84,7 +91,8 @@ HYPERGROW_AI/
 
 - **GET /api/stocks/history?SC_NAME=<stock-name>**
   - Get stock price history list for UI graph.
-
+  - Implemented cache for faster retreival
+  
     Example:
     ```plaintext
     GET /api/stocks/history?SC_NAME=TCS
