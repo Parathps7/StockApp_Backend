@@ -1,4 +1,4 @@
-# Stock Price View Application(Backend Assesment Hypergrow.ai)
+# Stock Price View Application
 
 This repository contains the code for a Stock Price View Application that accesses and manages data from the Bombay Stock Exchange (BSE). The application is built using Node.js and Express.js, with MongoDB as the database.
 
