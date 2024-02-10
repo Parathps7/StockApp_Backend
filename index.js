@@ -50,11 +50,11 @@ const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
-//schedule to update db set time accordingly
-cron.schedule("* * * * 2 *", async ()=> {
-    await updateDataFromBhavcopy();
-    console.log("Updating DB every 2 years");
-});
+//uncomment and set time accordingly
+// cron.schedule("* * * * 2 *", async ()=> {
+//     await updateDataFromBhavcopy();
+//     console.log("Updating DB every 2 years");
+// });
 
 
 //routes setup
