@@ -121,5 +121,5 @@ const updateDataFromBhavcopy = async () => {
 //     const result= await fetchLast50DaysData();
 //     console.log(result);
 };
-updateDataFromBhavcopy();
+
 module.exports = {updateDataFromBhavcopy};
