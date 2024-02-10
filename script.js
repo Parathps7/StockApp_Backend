@@ -60,7 +60,7 @@ function convertToNormalDateFormat(numericDate) {
     // Create a new Date object with the extracted values
     const normalDate = new Date(`${month}-${day}-${year} EDT`);
     //IMPORTANT: took from stackoverflow(date func not returning correct date otherwise)
-    // Return the formatted date as a string
+
     return normalDate;
 }
 const fetchLast50DaysData = async () => {
@@ -75,7 +75,7 @@ const fetchLast50DaysData = async () => {
 
 const updateDataFromBhavcopy = async () => {
     const zero = "0";
-    let day = "19";
+    let day = "25";
     let month = "1";
     let year = "24";
     if(parseInt(day,10)<10){
@@ -105,15 +105,21 @@ const updateDataFromBhavcopy = async () => {
     const extractPath = './';
 
     // Download and extract the ZIP
-    await downloadAndExtractZip(zipUrl, extractPath);
+    await downloadAndExtractZip(zipUrl, extractPath)
+    .then(()=>{
+        console.log("data downloaded successfully.");
+    })
+    .catch((err)=>{
+        console.log(err);
+    });
 
     // Read CSV and store in MongoDB using Mongoose
     const csvPath = path.join(extractPath, `EQ${numericDate}.CSV`);
+    
     await readCsvAndStoreInDatabase(csvPath, date);
-
     // Fetch last 50 days data
 //     const result= await fetchLast50DaysData();
 //     console.log(result);
 };
-
+updateDataFromBhavcopy();
 module.exports = {updateDataFromBhavcopy};

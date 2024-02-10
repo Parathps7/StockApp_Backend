@@ -1,4 +1,4 @@
-// const {constants} = require("../constants")
+
 let constants = {
     VALIDATION_ERROR: 400,
     UNAUTHORIZED: 401,
@@ -25,7 +25,7 @@ const errorHandler = (err,req,res,next)=>{
              res.json({title: "SERVER ERROR!",message: err.message, stackTrace: err.stack});
             break;
         default:
-            consoler.log("NO ERROR, ALL GOOD!!!")
+            console.log("NO ERROR, ALL GOOD!!!");
             break;
     }
     

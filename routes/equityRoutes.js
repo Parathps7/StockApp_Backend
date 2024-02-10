@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {getTop10,getOne,getHistory} = require("../controllers/equityController");
+const {getTop10,getOne,getHistory,getProfit} = require("../controllers/equityController");
 
 /**
  * @swagger
@@ -56,6 +56,16 @@ router.get("/",getOne);
  *         description: Stock not found.
  */
 router.get("/history",getHistory);
-
+/**
+ * @swagger
+ * /api/stocks/profit:
+ *   get:
+ *     summary: Get the top profitable stock.
+ *     tags: [Equity]
+ *     responses:
+ *       '200':
+ *         description: A successful response with the top profit stock.
+ */
+router.get("/profit", getProfit);
 
 module.exports = router;

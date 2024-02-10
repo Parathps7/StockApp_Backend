@@ -57,4 +57,29 @@ const getHistory = asyncHandler(async(req,res)=>{
     res.status(200).json(stocks);
 })
 
-module.exports = {getTop10,getOne,getHistory}
+const getProfit = asyncHandler(async(req,res)=>{
+
+    const data = await Equity.find().sort({DATE: -1}).limit(1);
+    const date = data[0].DATE;
+    console.log(date);
+    const max = await Equity.aggregate([
+        {$match: {DATE: date}},
+        {
+            $project: {
+                _id: 0,
+                SC_NAME: 1,
+                maxDiff : {$subtract: ["$HIGH",  "$LOW"]},
+            }
+        },
+        { $sort: {maxDiff: -1} },
+        {$limit: 1}
+    ]);
+    console.log(max);
+    if(!max){
+        res.status(404);
+        throw new Error("The database might be empty.");
+    }
+    res.status(200).json({max});
+});
+
+module.exports = {getTop10,getOne,getHistory,getProfit}

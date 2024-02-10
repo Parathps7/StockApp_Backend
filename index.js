@@ -48,11 +48,15 @@ const swaggerOptions = {
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-//schedule to update db
-cron.schedule("* */2 * * * *", async ()=> {
+
+
+//schedule to update db set time accordingly
+cron.schedule("* * * * 2 *", async ()=> {
     await updateDataFromBhavcopy();
-    console.log("running a task every 3 minute");
+    console.log("Updating DB every 2 years");
 });
+
+
 //routes setup
 app.get('/',(req,res)=>{res.send("hey")});
 const equityRoute = require('./routes/equityRoutes');
