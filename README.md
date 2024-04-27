@@ -152,4 +152,4 @@ StockApp_Backend/
 
 ## Important Note
 
-fsdfsdfsdf
+This README.md file provides instructions on how to set up and use the Skygoal Backend Task by Parath Safaya. It includes information on installation, API usage, Docker container setup, Swagger API documentation, and important notes.
