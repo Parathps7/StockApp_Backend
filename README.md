@@ -1,30 +1,33 @@
-# Stock Price View Application
+# Skygoal Backend Task by Parath Safaya
 
-This repository contains the code for a Stock Price View Application that accesses and manages data from the Bombay Stock Exchange (BSE). The application is built using Node.js and Express.js, with MongoDB as the database.
+This repository contains the code for a backend task completed by Parath Safaya for Skygoal. The project implements user authentication with functionalities like sign-up,login,forget-password, reset password and authorization functionalities using Node.js, Express.js, and MongoDB. It also includes security measures to handle web vulnerabilities effectively.User can add, delete and view the images according to his/her authorization."admin" authorized user can do all three thing while "user" authorized user can only view.
 
 ## Project Structure
 
 ```plaintext
-HYPERGROW_AI/
+StockApp_Backend/
 |-- config/
 |   |-- dbConnection.js
+|   |-- loggerModel.js
 |-- controllers/
-|   |-- equityControllers.js
-|   |-- favouriteController.js
+|   |-- imageControllers.js
+|   |-- userDetails.js
 |   |-- userController.js
 |-- middleware/
-|   |-- errorHandler.js
+|   |-- errorHandling.js
 |   |-- validateTokenHandler.js
+|   |-- userAuth.js
 |-- models/
-|   |-- equityModel.js
-|   |-- favouriteModel.js
+|   |-- imageModel.js
 |   |-- userModel.js
 |-- routes/
-|   |-- equityRoutes.js
-|   |-- favouriteRoutes.js
+|   |-- imageRoutes.js
+|   |-- userDRoutes.js
 |   |-- userRoutes.js
+|-- test/
+|   |-- app.test.js
+|-- Dockerfile
 |-- index.js
-|-- script.js
 ```
 
 ## Installation and Setup
@@ -33,7 +36,7 @@ HYPERGROW_AI/
 
    ```bash
    git clone <repository-url>
-   cd HYPERGROW_AI
+   cd StockApp_Backend
    ```
 
 2. Install dependencies:
@@ -45,18 +48,23 @@ HYPERGROW_AI/
 3. Set up the environment variables by creating a `.env` file in the root directory:
 
    ```plaintext
-   PORT=<port-number>
-   CONNECTION_STRING=<your-mongodb-connection-string>
-   ACCESS_TOKEN_SECRET=<your-secret-key>
+   PORT = <PORT>
+   CONNECTION_STRING = <CONNECTION_STRING>
+   ACCESS_TOKEN_SECRET = <ACCESS_TOKEN_SECRET>
+   EMAIL_USER = <EMAIL_USER>
+   EMAIL_PASSWORD = <EMAIL_PASSWORD>
+   ADMIN_PASS = <ADMIN_PASS>
+
    ```
 
-4. Run the script to populate the database with stock data:
+4. You can also run this using Docker conatainer:
 
    ```bash
-   node script.js
+   docker build -t skygoal_Backend_Task .
+   docker run -it -e PORT = <PORT> -e CONNECTION_STRING = <CONNECTION_STRING> -e ACCESS_TOKEN_SECRET = <ACCESS_TOKEN_SECRET> -e EMAIL_USER = <EMAIL_USER>  -e EMAIL_PASSWORD = <EMAIL_PASSWORD> -e ADMIN_PASS = <ADMIN_PASS> -p 3000:<PORT> skygoal_backend_task
    ```
 
-5. Run the application:
+5. or Run the application:
 
    ```bash
    npm start
@@ -65,67 +73,46 @@ HYPERGROW_AI/
 6. Run Swagger Documentation on:
 
    ```plaintext
-   http://localhost:<PORT>/api-docs/
+   http://localhost:3000/api-docs/
    ```
 
 ## API Usage
 
-### Equity API
+###  Images API
 
-- **GET /api/stocks/top10**
-  - Get the top 10 latest stocks.
-  - Implemented cache for faster retreival
+- **POST /api/images/add**
+  - ADD an image and caption
   
     Example:
     ```plaintext
-    GET /api/stocks/top10
+    GET POST /api/images/add
     ```
 
-- **GET /api/stocks?SC_NAME=<stock-name>**
-  - Get a stock by name.
-  - 
+- **DELETE /api/images/delete/{id}
+  - Delete an image
     Example:
     ```plaintext
-    GET /api/stocks?SC_NAME=Reliance
+    DELETE /api/images/delete/{id}
     ```
 
-- **GET /api/stocks/history?SC_NAME=<stock-name>**
-  - Get stock price history list for UI graph.
-  - Implemented cache for faster retreival
+- **GET /api/images/view**
+  - See the images along with caption
   
     Example:
     ```plaintext
-    GET /api/stocks/history?SC_NAME=TCS
+    GET /api/images/view
     ```
 
-### Favourites API
+### User Details API
 
-- **GET /api/fav**
-  - Get all favourite stocks. (Requires user authentication)
-
+- **GET /api/user-details/:email**
+  - Get detail of a user uniquely identified by email
     Example:
     ```plaintext
-    GET /api/fav
+    GET /api/user-details/safayaparath@gmail.com
     ```
 
-- **POST /api/fav**
-  - Add a stock to favourites. (Requires user authentication)
-
-    Example:
-    ```plaintext
-    POST /api/fav
-    Body: { "stockName": "Infosys" }
-    ```
-
-- **DELETE /api/fav/:id**
-  - Remove a stock from favourites. (Requires user authentication)
-
-    Example:
-    ```plaintext
-    DELETE /api/fav/608f19cfe3b07b001e1e3e23
-    ```
-
-### User API
+### Users API
 
 - **POST /api/users/register**
   - Register a new user.
@@ -133,7 +120,7 @@ HYPERGROW_AI/
     Example:
     ```plaintext
     POST /api/users/register
-    Body: { "username": "john_doe", "email": "john@example.com", "password": "password123" }
+    Body: { "username": "john_doe", "email": "john@example.com", "password": "password123" ,"adminpass": "abcdef"}
     ```
 
 - **POST /api/users/login**
@@ -145,16 +132,24 @@ HYPERGROW_AI/
     Body: { "email": "john@example.com", "password": "password123" }
     ```
 
-- **GET /api/users/current**
+- **POST /api/users/forget-password**
   - Get current user information. (Requires user authentication)
 
     Example:
     ```plaintext
-    GET /api/users/current
+    POST /api/users/current
+    Body: { "email": "john@example.com" }
+    ```
+    
+- **POST /api/users/reset-password/{token}**
+  - Get current user information. (Requires user authentication)
+
+    Example:
+    ```plaintext
+    POST /api/users/reset-password/{token}
+    Body: { "password": "newpassword" }
     ```
 
 ## Important Note
 
-Before starting the server, make sure to run the `script.js` script to download the latest stock data from BSE(you can add date,month,year in the script to have stock data of your choice) and populate the database. This ensures that the application has the necessary stock documents for the APIs to function correctly.
-
-**Note:** For /api/fav Routes Users must register and log in to perform actions such as adding, deleting, or retrieving favourite stocks. Authentication is required to access these routes for security purposes.
+fsdfsdfsdf
